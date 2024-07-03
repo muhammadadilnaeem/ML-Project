@@ -1,5 +1,13 @@
 import sys  # sys is a built-in module in python which provides access to some variables used or maintained by the interpreter at runtime.
 import logging
+from logger import LOG_FILE_PATH  # Import the log file path from logger.py
+
+# Configure logging
+logging.basicConfig(
+    filename=LOG_FILE_PATH,
+    format="[ %(asctime)s ] %(lineno)d %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
+)
 
 def error_message_detail(error, error_detail: sys):
     """
@@ -32,6 +40,7 @@ class CustomException(Exception):
     def __init__(self, error_message, error_detail: sys):
         super().__init__(error_message)
         self.error_message = error_message_detail(error_message, error_detail=error_detail)
+        logging.error(self.error_message)  # Log the error message
     
     def __str__(self):
         """
@@ -41,3 +50,10 @@ class CustomException(Exception):
             str: The detailed error message.
         """
         return self.error_message
+
+# if __name__ == "__main__":
+#     try:
+#         a = 1 / 0
+#     except Exception as e:
+#         logging.info("Divide by zero error")
+#         raise CustomException(e, sys)
