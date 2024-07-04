@@ -4,4 +4,4 @@ matplotlib
 seaborn 
 openpyxl
 scikit-learn
--e .
+-e . # comment it when you are installing requirements.txt
