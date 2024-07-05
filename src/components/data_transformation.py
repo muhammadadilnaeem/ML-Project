@@ -64,6 +64,10 @@ class DataTransformation:
             train_df = pd.read_csv(train_path)
             test_df = pd.read_csv(test_path)
 
+            # Check for NaN values
+            if train_df.isnull().values.any() or test_df.isnull().values.any():
+                raise ValueError("NaN values found in the dataset")
+
             logging.info("Read train and test data completed")
             logging.info(f"Train Dataframe Head : {train_df.head().to_string()}")
             logging.info(f"Test Dataframe Head  : {test_df.head().to_string()}")
@@ -81,23 +85,21 @@ class DataTransformation:
             input_feature_test_df = test_df.drop(columns=[target_column_name], axis=1)
             target_feature_test_df = test_df[target_column_name]
 
-            logging.info(f"Applying preprocessing object on training dataframe and testing dataframe.")
-
+            # Apply preprocessing object after handling NaN values
             input_feature_train_arr = preprocessing_obj.fit_transform(input_feature_train_df)
             input_feature_test_arr = preprocessing_obj.transform(input_feature_test_df)
 
-            train_arr = np.c_[
-                input_feature_train_arr, np.array(target_feature_train_df)
-            ]
+            # Concatenate target column to the transformed arrays
+            train_arr = np.c_[input_feature_train_arr, np.array(target_feature_train_df)]
+            test_arr = np.c_[input_feature_test_arr, np.array(target_feature_test_df)]
 
-            test_arr = np.c_[input_feature_test_arr,np.array(target_feature_test_df)]
-        
             logging.info("Saved preprocessing object.")
 
             save_object(
                 file_path=self.data_transformation_config.preprocessor_obj_file_path,
                 obj=preprocessing_obj
             )
+
             return (
                 train_arr,
                 test_arr,
